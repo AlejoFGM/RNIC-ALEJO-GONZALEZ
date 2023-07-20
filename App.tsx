@@ -1,126 +1,177 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React, {useEffect} from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {RefObject, useEffect, useRef, useState} from 'react';
 import {
+  FlatList,
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
   View,
+  KeyboardAvoidingView,
+  Platform,
+  AppState,
+  StatusBar,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+import Card from './src/components/card';
+import {mockedList} from './src/constants';
+import {CardList} from './src/types/types';
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [arrayCards, setArrayCards] = useState<CardList[]>(mockedList);
+  const [inputTitle, setInputTitle] = useState<string>('');
+  const [inputDescription, setInputDescription] = useState<string>('');
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const secondInput: RefObject<TextInput> = useRef(null);
 
-  console.log('test console log');
+  const isAndroid = Platform.OS === 'android';
+
+  const styles = StyleSheet.create({
+    wrapper: {
+      flex: 1,
+    },
+    main: {
+      flex: 1,
+      padding: 10,
+      backgroundColor: isAndroid ? 'white' : '#131311',
+    },
+    footer: {
+      paddingTop: 20,
+      alignItems: 'center',
+      backgroundColor: isAndroid ? 'white' : '#131311',
+    },
+    input: {
+      padding: 10,
+      borderWidth: 1,
+      color: isAndroid ? 'black' : 'white',
+      backgroundColor: isAndroid ? 'white' : '#131311',
+      borderColor: '#CD5C5C',
+      borderRadius: 10,
+      width: '75%',
+      marginBottom: 20,
+    },
+    button: {
+      padding: 10,
+      backgroundColor: '#CD5C5C',
+      borderRadius: 10,
+      borderColor: 'black',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 10,
+      width: '30%',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    buttonText: {
+      fontSize: 15,
+      color: 'black',
+    },
+    listHeader: {
+      alignItems: 'center',
+      padding: 5,
+    },
+    title: {
+      fontWeight: 'bold',
+      fontSize: 30,
+      color: isAndroid ? 'black' : '#E3E3D6',
+    },
+    listEmpty: {
+      alignItems: 'center',
+      alignContent: 'center',
+    },
+  });
 
   useEffect(() => {
-    fetch('https://pokeapi.co/api/v2/pokemon/ditto')
-      .then(raw => raw.json())
-      .then(data => console.log('Data', data));
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'background') {
+        setArrayCards([]);
+      }
+    });
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
+  const listHeader = (
+    <View style={styles.listHeader}>
+      <Text style={styles.title}>Task list</Text>
+    </View>
+  );
+  const emptyList = (
+    <View style={styles.listEmpty}>
+      <Text>No data here.</Text>
+    </View>
+  );
+
+  const onSubmitPress = () => {
+    setArrayCards([
+      ...arrayCards,
+      {
+        title: inputTitle,
+        description: inputDescription,
+        complete: false,
+      },
+    ]);
+    setInputTitle('');
+    setInputDescription('');
+  };
+
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.wrapper}>
+        <SafeAreaView style={styles.wrapper}>
+          <StatusBar
+            barStyle={isAndroid ? 'dark-content' : 'light-content'}
+            backgroundColor={isAndroid ? 'white' : 'black'}
+          />
+          <FlatList
+            style={styles.main}
+            data={arrayCards}
+            renderItem={({item}) => (
+              <Card
+                title={item.title}
+                description={item.description}
+                complete={item.complete}
+              />
+            )}
+            ListEmptyComponent={emptyList}
+            ListHeaderComponent={listHeader}
+          />
+          <View style={styles.footer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Title"
+              value={inputTitle}
+              onChangeText={setInputTitle}
+              returnKeyType="next"
+              onSubmitEditing={() => secondInput.current?.focus()}
+              placeholderTextColor={isAndroid ? 'black' : '#E3E3D6'}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Description"
+              value={inputDescription}
+              onChangeText={setInputDescription}
+              ref={secondInput}
+              returnKeyType="done"
+              placeholderTextColor={isAndroid ? 'black' : '#E3E3D6'}
+            />
+            <TouchableOpacity style={styles.button} onPress={onSubmitPress}>
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
