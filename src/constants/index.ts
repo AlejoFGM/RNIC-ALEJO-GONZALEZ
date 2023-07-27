@@ -5,6 +5,7 @@ export const mockedList = [
       'Ir al supermercado y comprar alimentos frescos, productos básicos y artículos de limpieza.',
     complete: false,
     key: 0,
+    image: require('../assets/images/supermercado.png'),
   },
   {
     title: 'Hacer ejercício',
@@ -12,6 +13,7 @@ export const mockedList = [
       'Realizar una rutina de ejercicios durante 30 minutos, incluyendo cardio y ejercicios de fuerza.',
     complete: true,
     key: 1,
+    image: require('../assets/images/pesas.png'),
   },
   {
     title: 'Estudiar para el examen',
@@ -26,5 +28,6 @@ export const mockedList = [
       'Limpiar todas las habitaciones de la casa, incluyendo aspirar y trapear los pisos, y limpiar los baños.',
     complete: false,
     key: 3,
+    image: require('../assets/images/limpieza.png'),
   },
 ];

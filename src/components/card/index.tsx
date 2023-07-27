@@ -1,23 +1,64 @@
 import React, {useState} from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
-import styles from './styles';
 import {Cards} from '../../types/types';
+import {
+  CardContainer,
+  ContainerText,
+  CardTitle,
+  CardDescription,
+  ButtonsContainer,
+  BorderContainer,
+  ImageCard,
+  ImageContainer,
+  TouchableButton,
+} from './styles';
+import Edit from '../../assets/icons/edit-2.svg';
+import Remove from '../../assets/icons/trash-2.svg';
+import ToggleRigh from '../../assets/icons/toggle-right.svg';
+import ToggleLeft from '../../assets/icons/toggle-left.svg';
 
 const Card = (props: Cards) => {
-  const {description, title, complete} = props;
+  const {description, title, complete, image} = props;
   const [state, setState] = useState<boolean>(complete);
+
   return (
-    <TouchableOpacity onPress={() => setState(!state)}>
-      <View style={state ? styles.cardCheck : styles.card}>
-        <View style={styles.containerText}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.description}>{description}</Text>
-        </View>
-        <View style={styles.circleContainer}>
-          <View style={state ? styles.circleCheck : styles.circle} />
-        </View>
-      </View>
-    </TouchableOpacity>
+    <BorderContainer>
+      <CardContainer state={state}>
+        <ContainerText>
+          <CardTitle>{title}</CardTitle>
+          {image ? (
+            <ImageContainer>
+              <ImageCard alt={'card_image'} source={image} />
+            </ImageContainer>
+          ) : null}
+          <CardDescription>{description}</CardDescription>
+        </ContainerText>
+        <ButtonsContainer>
+          <TouchableButton>
+            <Remove width={30} height={30} fill={'#CD5C5C'} stroke={'black'} />
+          </TouchableButton>
+          <TouchableButton>
+            <Edit width={30} height={30} fill={'#CD5C5C'} stroke={'black'} />
+          </TouchableButton>
+          <TouchableButton onPress={() => setState(!state)}>
+            {state ? (
+              <ToggleRigh
+                width={30}
+                height={30}
+                fill={'#CD5C5C'}
+                stroke={'black'}
+              />
+            ) : (
+              <ToggleLeft
+                width={30}
+                height={30}
+                stroke={'black'}
+                fill={'lightgrey'}
+              />
+            )}
+          </TouchableButton>
+        </ButtonsContainer>
+      </CardContainer>
+    </BorderContainer>
   );
 };
 
