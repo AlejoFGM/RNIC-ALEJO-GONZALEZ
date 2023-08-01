@@ -1,13 +1,11 @@
-import {DefaultTheme} from 'styled-components';
 import styled from 'styled-components/native';
 
-export const CardContainer = styled.View`
+export const CardContainer = styled.View<{state: boolean}>`
   margin: 10px;
   padding: 5px;
   border-width: 5px;
-  border-color: ${({theme}: DefaultTheme) => theme.colors.primary};
-  border-style: ${(props: {state: boolean}) =>
-    props.state ? 'solid' : 'dotted'};
+  border-color: ${({theme}) => theme.colors.primary};
+  border-style: ${props => (props.state ? 'solid' : 'dotted')};
 `;
 
 export const BorderContainer = styled.View`
@@ -23,7 +21,7 @@ export const CardTitle = styled.Text`
   font-weight: 900;
   font-size: 25px;
   font-family: 'Lato-Bold';
-  color: ${({theme}: DefaultTheme) => theme.colors.black};
+  color: ${({theme}) => theme.colors.black};
 `;
 
 export const CardDescription = styled.Text`

@@ -1,8 +1,10 @@
 import React, {useEffect} from 'react';
 import RNBootSplash from 'react-native-bootsplash';
-import TaskList from './src/components/task-list';
 import {ThemeProvider} from 'styled-components/native';
 import {myTheme} from './src/constants/theme';
+import {NavigationContainer} from '@react-navigation/native';
+import NestedNavigators from './src/navigation/nested-navigators';
+import {TaskListProvider} from './src/constants/provider';
 
 function App(): JSX.Element {
   useEffect(() => {
@@ -10,9 +12,13 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <ThemeProvider theme={myTheme}>
-      <TaskList />
-    </ThemeProvider>
+    <TaskListProvider>
+      <ThemeProvider theme={myTheme}>
+        <NavigationContainer>
+          <NestedNavigators />
+        </NavigationContainer>
+      </ThemeProvider>
+    </TaskListProvider>
   );
 }
 

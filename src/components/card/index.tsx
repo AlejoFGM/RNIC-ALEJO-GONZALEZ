@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Cards} from '../../types/types';
+import React, {useContext} from 'react';
+import {DataCard, ImagesType} from '../../types/types';
 import {
   CardContainer,
   ContainerText,
@@ -11,36 +11,51 @@ import {
   ImageContainer,
   TouchableButton,
 } from './styles';
-import Edit from '../../assets/icons/edit-2.svg';
-import Remove from '../../assets/icons/trash-2.svg';
 import ToggleRigh from '../../assets/icons/toggle-right.svg';
 import ToggleLeft from '../../assets/icons/toggle-left.svg';
+import {TaskListContext} from '../../constants/provider';
 
-const Card = (props: Cards) => {
-  const {description, title, complete, image} = props;
-  const [state, setState] = useState<boolean>(complete);
+const Card = (props: DataCard) => {
+  const {data} = props;
+  const {description, title, complete, image, id, date} = data;
+  const {taskListProv, setTaskListProv} = useContext(TaskListContext)!;
+
+  const onTogglePress = () => {
+    const updatedTaskList = taskListProv.map(task => {
+      if (task.id === id) {
+        return {...task, complete: !task.complete};
+      }
+      return task;
+    });
+    setTaskListProv(updatedTaskList);
+  };
+
+  const imagesMapping: ImagesType = {
+    super: require('../../assets/images/supermercado.png'),
+    pesas: require('../../assets/images/pesas.png'),
+    limpieza: require('../../assets/images/limpieza.png'),
+  };
+
+  const imageRoute = image ? imagesMapping[image] : null;
 
   return (
     <BorderContainer>
-      <CardContainer state={state}>
+      <CardContainer state={complete}>
         <ContainerText>
           <CardTitle>{title}</CardTitle>
-          {image ? (
+          {imageRoute ? (
             <ImageContainer>
-              <ImageCard alt={'card_image'} source={image} />
+              <ImageCard alt={'card_image'} source={imageRoute} />
             </ImageContainer>
           ) : null}
           <CardDescription>{description}</CardDescription>
+          <CardDescription>
+            {date ? `Limit Date: ${date}` : null}
+          </CardDescription>
         </ContainerText>
         <ButtonsContainer>
-          <TouchableButton>
-            <Remove width={30} height={30} fill={'#CD5C5C'} stroke={'black'} />
-          </TouchableButton>
-          <TouchableButton>
-            <Edit width={30} height={30} fill={'#CD5C5C'} stroke={'black'} />
-          </TouchableButton>
-          <TouchableButton onPress={() => setState(!state)}>
-            {state ? (
+          <TouchableButton onPress={onTogglePress}>
+            {complete ? (
               <ToggleRigh
                 width={30}
                 height={30}
