@@ -49,8 +49,8 @@ const Card = (props: Cards) => {
               />
             ) : (
               <ToggleLeft
-                width={30}
-                height={30}
+                width={70}
+                height={80}
                 stroke={'black'}
                 fill={'lightgrey'}
               />
