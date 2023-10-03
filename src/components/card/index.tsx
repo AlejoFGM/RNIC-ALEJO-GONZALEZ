@@ -42,8 +42,8 @@ const Card = (props: Cards) => {
           <TouchableButton onPress={() => setState(!state)}>
             {state ? (
               <ToggleRigh
-                width={30}
-                height={30}
+                width={60}
+                height={60}
                 fill={'#CD5C5C'}
                 stroke={'black'}
               />
