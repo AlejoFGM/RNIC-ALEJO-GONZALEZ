@@ -1,21 +1,12 @@
 import styled from 'styled-components/native';
 
-export const KeyboardView = styled.KeyboardAvoidingView`
-  flex: 1;
-`;
-
 export const Wrapper = styled.SafeAreaView`
   flex: 1;
-`;
-
-export const Main = styled.FlatList`
-  flex: 1;
-  padding: 10px;
-  background-color: ${({theme}) => theme.colors.white};
+  align-content: center;
 `;
 
 export const Footer = styled.View`
-  padding-top: 20px;
+  /* padding-top: 20px; */
   align-items: center;
   background-color: ${({theme}) => theme.colors.white};
 `;
@@ -49,21 +40,4 @@ export const ButtonText = styled.Text`
   font-family: 'Lato-Bold';
   color: ${({theme}) => theme.colors.black};
   padding-right: 5px;
-`;
-
-export const ListHeader = styled.View`
-  align-items: center;
-  padding: 5px;
-`;
-
-export const ListEmpty = styled.View`
-  align-items: center;
-  align-content: center;
-`;
-
-export const TitleList = styled.Text`
-  font-weight: 600;
-  font-family: 'Lato-Bold';
-  font-size: 30px;
-  color: ${({theme}) => theme.colors.black};
 `;

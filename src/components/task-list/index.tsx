@@ -1,49 +1,31 @@
-import React, {RefObject, useEffect, useRef, useState} from 'react';
+import React, {useContext} from 'react';
 import {
   Text,
-  TextInput,
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
-  AppState,
   StatusBar,
+  TouchableOpacity,
 } from 'react-native';
-import {CardList} from '../../types/types';
-import {mockedList} from '../../constants';
+import {Cards, RouteParamList, Routes} from '../../types/types';
 import Card from '../card';
 import {
   KeyboardView,
   Wrapper,
   Main,
-  Footer,
-  Input,
-  Button,
-  ButtonText,
   ListHeader,
   ListEmpty,
   TitleList,
 } from './styles';
-import Check from '../../assets/icons/check-circle.svg';
+import {TaskListContext} from '../../constants/provider';
+import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 
-function TaskList(): JSX.Element {
-  const [arrayCards, setArrayCards] = useState<CardList[]>(mockedList);
-  const [inputTitle, setInputTitle] = useState<string>('');
-  const [inputDescription, setInputDescription] = useState<string>('');
+type ListScreen = BottomTabScreenProps<RouteParamList, Routes.LIST>;
 
-  const secondInput: RefObject<TextInput> = useRef(null);
+function TaskList({navigation}: ListScreen): JSX.Element {
+  const {taskListProv} = useContext(TaskListContext)!;
 
   const isAndroid = Platform.OS === 'android';
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', nextAppState => {
-      if (nextAppState === 'background') {
-        setArrayCards([]);
-      }
-    });
-    return () => {
-      subscription.remove();
-    };
-  }, []);
 
   const listHeader = (
     <ListHeader>
@@ -56,19 +38,6 @@ function TaskList(): JSX.Element {
     </ListEmpty>
   );
 
-  const onSubmitPress = () => {
-    setArrayCards([
-      ...arrayCards,
-      {
-        title: inputTitle,
-        description: inputDescription,
-        complete: false,
-      },
-    ]);
-    setInputTitle('');
-    setInputDescription('');
-  };
-
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -78,40 +47,20 @@ function TaskList(): JSX.Element {
             backgroundColor={isAndroid ? 'white' : 'black'}
           />
           <Main
-            data={arrayCards}
-            renderItem={({item}: any) => (
-              <Card
-                title={item.title}
-                description={item.description}
-                complete={item.complete}
-                image={item.image}
-              />
+            data={taskListProv}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(Routes.EDIT_TASK, {
+                    data: item as Cards,
+                  })
+                }>
+                <Card data={item as Cards} />
+              </TouchableOpacity>
             )}
             ListEmptyComponent={emptyList}
             ListHeaderComponent={listHeader}
           />
-          <Footer>
-            <Input
-              placeholder="Title"
-              value={inputTitle}
-              onChangeText={setInputTitle}
-              returnKeyType="next"
-              onSubmitEditing={() => secondInput.current?.focus()}
-              placeholderTextColor={isAndroid ? 'black' : '#E3E3D6'}
-            />
-            <Input
-              placeholder="Description"
-              value={inputDescription}
-              onChangeText={setInputDescription}
-              ref={secondInput}
-              returnKeyType="done"
-              placeholderTextColor={isAndroid ? 'black' : '#E3E3D6'}
-            />
-            <Button onPress={onSubmitPress}>
-              <ButtonText>Submit</ButtonText>
-              <Check stroke={'black'} />
-            </Button>
-          </Footer>
         </Wrapper>
       </KeyboardView>
     </TouchableWithoutFeedback>
